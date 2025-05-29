@@ -157,7 +157,6 @@ void setup() {
   lcd.setCursor(0, 1);
   lcd.print("       planes...");
 }
-
 int main() {
   init();
   setup();
@@ -203,16 +202,16 @@ int main() {
             float speed = 300.0f / elapsed_time;
 
             lcd.clear();
-            lcd.setCursor(0,0);
+            lcd.setCursor(0, 0);
             lcd.print("Speed:");
 
-            lcd.setCursor(0,1);
+            lcd.setCursor(0, 1);
             dtostrf(speed, 5, 2, buf);
             lcd.print(buf);
             lcd.print(" m/s");
 
             uint16_t freq = (uint16_t)(speed * 150 + 200);
-            
+
             uart_print_uint16(freq);
             uart_print(" Hz - Buzzer ON!\r\n");
             buzzer_start(freq, 50);
@@ -229,6 +228,15 @@ int main() {
 
         last_distance[i] = distance_cm_1;
         last_distance[i + 1] = distance_cm_2;
+      }
+    }
+
+    if (last_drop_time != 0) {
+      uint32_t current_time = get_time_ms();
+      if (current_time - last_drop_time > 1000) {
+        uart_print("Timeout 1s - resetare asteptare pereche!\r\n");
+        last_drop_time = 0;
+        last_drop_pair = 255;
       }
     }
   }
